@@ -7,7 +7,11 @@ const {CleanWebpackPlugin} = require('clean-webpack-plugin');
 module.exports = {
     mode: 'development',
     devtool: 'inline-source-map',
-    entry: './src/main.js',
+    entry: './src/main.js',//单入口
+    // entry: {
+    //     main1:"./src/main1",
+    //     main2:"./src/main2"
+    // },//多入口
     output: {
         path: path.resolve(__dirname, "dist"),
         filename: "./js/[name]_[hash].js",
