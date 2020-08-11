@@ -14,7 +14,7 @@ module.exports = {
     // },//多入口
     output: {
         path: path.resolve(__dirname, "dist"),
-        filename: "./js/[name]_[hash].js",
+        filename: "./js/[name]_[hash].js", //使用[name]打包出来的js文件会分别按照入口文件配置的属性来命名
     },
     resolve: {
         extensions: ['.js', '.vue', '.json', 'css'],
