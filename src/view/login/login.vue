@@ -114,4 +114,7 @@
 .el-select {
     display: block;
 }
+.asss {
+    display: inline;
+}
 </style>
