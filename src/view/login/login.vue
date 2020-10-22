@@ -115,6 +115,6 @@
     display: block;
 }
 .asss {
-    display: inline;
+    display: flex;
 }
 </style>

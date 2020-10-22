@@ -40,36 +40,64 @@ module.exports = {
                 "test": /\.css$/,
                 "use": [
                     {
-                        "loader": MiniCssExtractPlugin.loader
+                        "loader": MiniCssExtractPlugin.loader // 不再需要style-loader，⽤MiniCssExtractPlugin.loader代替
                     },
-                    'css-loader'
+                    'css-loader',
+                    'postcss-loader'
                 ]
             },
             {
                 "test": /\.js$/,
-                "use": 'babel-loader',
+                "use":  'babel-loader',
                 "exclude":/node_modules/
             },
             {
-                "test": /\.(eot|svg|ttf|woff|woff2)(\?\S*)?$/,
-                "loader": [
+                "test": /\.(eot|ttf|woff|woff2)(\?\S*)?$/,
+                "use": [
                     {
                         "loader": 'url-loader',
                         "options": {
-                            "name": '[name].[ext]',
+                            name: '[name].[ext]',
+                            outputPath: 'assets/font',
+                            limit: 3 * 1024, //对小体积的资源图片进行管理，小图片转成base64,减少请求数量
                         }
                     }
                 ]
             },
             {
-                "test": /\.(jpg|png|jpeg|webp|gif)$/,
-                "loader": [
+                "test": /\.(jpg|png|jpeg|webp|gif|svg)$/,
+                "use": [
                     {
                         "loader": 'url-loader',
                         "options": {
-                            "name": '[name].[ext]',
-                            "outputPath": './image',
-                            "esModule": false,
+                            name: '[name].[ext]',
+                            outputPath: 'assets/img',
+                            limit: 3 * 1024, //对小体积的资源图片进行管理，小图片转成base64,减少请求数量
+                            esModule: false,
+                        }
+                    },
+                    {
+                        loader: 'image-webpack-loader',
+                        options: {
+                            mozjpeg: {
+                                progressive: true,//默认为true
+                                // quality: 75//图片质量（大小）可以不用配置，会默认按照一定比例智能压缩
+                            },
+                            // optipng.enabled: false will disable optipng
+                            optipng: {
+                                enabled: false,
+                            },
+                            pngquant: {
+                                quality: [0.65, 0.90],
+                                speed: 4
+                            },
+                            gifsicle: {
+                                interlaced: false,
+                            },
+                            // the webp option will enable WEBP
+                            webp: {
+                                quality: 75
+                            }
                         }
                     }
                 ]
@@ -90,13 +118,14 @@ module.exports = {
         ]
     },
     "optimization": {
+        sideEffects: true,
         splitChunks: {
             chunks: 'all',
             minSize: 20000,
             maxSize: 0,
             minChunks: 1,
-            maxAsyncRequests: 30,
-            maxInitialRequests: 30,
+            maxAsyncRequests: 5,
+            maxInitialRequests: 3,
             automaticNameDelimiter: '~',
             cacheGroups: {
                 elementUI: {
@@ -119,7 +148,7 @@ module.exports = {
                 },
             }
         },
-        usedExports: true //Tree Shaking
+        // usedExports: true //Tree Shaking
     },
     "plugins": [
         new VueLoaderPlugin(),
@@ -138,16 +167,9 @@ module.exports = {
             }
         }),
         new MiniCssExtractPlugin({//放在HtmlWebpackPlugin后面
-            "title": 'fuck',
+            "title": 'demo',
             "filename": 'css/[name].[hash].css',
             "chunkFilename": 'css/[id]-[contenthash].css',
-            "minify": { //压缩 html 文件
-
-                "removeAttributeQuotes":true, //删除属性的双引号
-
-                "collapseWhitespace":true //折叠空行，变成一行
-
-            },
         }),
         new PurifyCSS({//无顺序要求
             paths: glob.sync([

@@ -3,6 +3,9 @@ const VueLoaderPlugin = require('vue-loader/lib/plugin')
 const HtmlWebpackPlugin = require('html-webpack-plugin')
 const MiniCssExtractPlugin = require('mini-css-extract-plugin')
 const {CleanWebpackPlugin} = require('clean-webpack-plugin');
+const PurifyCSS = require('purifycss-webpack')
+const glob = require('glob-all')
+const OptimizeCSSAssetsPlugin = require("optimize-css-assets-webpack-plugin");
 
 module.exports = {
     "mode": 'development',
@@ -37,36 +40,45 @@ module.exports = {
                 "test": /\.css$/,
                 "use": [
                     {
-                        "loader": MiniCssExtractPlugin.loader
+                        loader: MiniCssExtractPlugin.loader, // 不再需要style-loader，⽤MiniCssExtractPlugin.loader代替
+                        options: {
+                            publicPath: '/',//webpack5 不支持自动配置publicPath，手动配置，设置url-laoder时会有明显报错
+                            ignoreOrde: true
+                        }
                     },
-                    'css-loader'
+                    'css-loader',
+                    'postcss-loader'
                 ]
             },
             {
                 "test": /\.js$/,
-                "use": 'babel-loader',
+                "use":  'babel-loader',
                 "exclude":/node_modules/
             },
             {
-                "test": /\.(eot|svg|ttf|woff|woff2)(\?\S*)?$/,
-                "loader": [
+                test: /\.(eot|svg|ttf|woff|woff2)(\?\S*)?$/,
+                use: [
                     {
                         "loader": 'url-loader',
                         "options": {
-                            "name": '[name].[ext]',
+                            name: '[name].[ext]',
+                            outputPath: 'assets/font',
+                            limit: 3 * 1024, 
+                            esModule: false
                         }
                     }
                 ]
             },
             {
-                "test": /\.(jpg|png|jpeg|webp|gif)$/,
-                "loader": [
+                test: /\.(jpg|png|jpeg|webp|gif)$/,
+                use: [
                     {
                         "loader": 'url-loader',
                         "options": {
-                            "name": '[name].[ext]',
-                            "outputPath": './image',
-                            "esModule": false,
+                            name: '[name].[ext]',
+                            outputPath: 'assets/img',
+                            limit: 3 * 1024, //对小体积的资源图片进行管理，小图片转成base64,减少请求数量
+                            esModule: false
                         }
                     }
                 ]
@@ -87,14 +99,19 @@ module.exports = {
         ]
     },
     "optimization": {
+        sideEffects: true,
         splitChunks: {
             chunks: 'all',
-            minSize: 20000,
-            maxSize: 0,
-            minChunks: 1,
-            maxAsyncRequests: 30,
-            maxInitialRequests: 30,
-            automaticNameDelimiter: '~',
+            // minSize: 20000,//webpack4配置
+            // maxSize: 0,
+            // minChunks: 1,
+            // maxAsyncRequests: 5,
+            // maxInitialRequests: 3,
+            // automaticNameDelimiter: '~',
+            minSize: {//webpack5的变化
+                javascript: 30000,
+                webassembly: 50000,
+            },
             cacheGroups: {
                 elementUI: {
                     name: 'chunk-elementUI', // split elementUI into a single package
@@ -122,23 +139,34 @@ module.exports = {
         new VueLoaderPlugin(),
         new CleanWebpackPlugin(),
         new HtmlWebpackPlugin({
-            "title": "myWebPackDemo",
-            "favicon": './public/favicon.ico',
-            "template": './public/index.html',
-            "filename": "index.html",
-            "inject": true
+            title: "myWebPackDemo",
+            favicon: './public/favicon.ico',
+            template: './public/index.html',
+            filename: "index.html",
+            inject: true,
+            minify: {
+                // 压缩HTML⽂件
+                removeComments: true, // 移除HTML中的注释
+                collapseWhitespace: true, // 删除空⽩符与换⾏符
+                minifyCSS: true // 压缩内联css
+            }
         }),
-        new MiniCssExtractPlugin({
-            "title": 'fuck',
+        new MiniCssExtractPlugin({//放在HtmlWebpackPlugin后面
             "filename": 'css/[name].[hash].css',
             "chunkFilename": 'css/[id]-[contenthash].css',
-            "minify": { //压缩 html 文件
-
-                "removeAttributeQuotes":true, //删除属性的双引号
-
-                "collapseWhitespace":true //折叠空行，变成一行
-
-            },
+        }),
+        // new PurifyCSS({//无顺序要求,webpack5不支持
+        //     paths: glob.sync([
+        //         // 要做 CSS Tree Shaking 的路径⽂件
+        //         path.resolve(__dirname, './src/*.html'), // 请注意，我们同样需要对 html ⽂件进⾏ tree shaking
+        //         path.resolve(__dirname, './src/*.js')
+        //     ])
+        // }),
+        new OptimizeCSSAssetsPlugin({//放在MiniCssExtractPlugin后面
+            cssProcessor: require("cssnano"), //引⼊cssnano配置压缩选项
+                cssProcessorOptions: {
+                discardComments: { removeAll: true }
+            }
         }),
     ],
     "devServer": {
