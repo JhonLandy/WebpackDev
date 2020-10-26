@@ -171,13 +171,13 @@ module.exports = {
             "filename": 'css/[name].[hash].css',
             "chunkFilename": 'css/[id]-[contenthash].css',
         }),
-        new PurifyCSS({//无顺序要求
-            paths: glob.sync([
-                // 要做 CSS Tree Shaking 的路径⽂件
-                path.resolve(__dirname, './src/*.html'), // 请注意，我们同样需要对 html ⽂件进⾏ tree shaking
-                path.resolve(__dirname, './src/*.js')
-            ])
-        }),
+        // new PurifyCSS({//无顺序要求
+        //     paths: glob.sync([
+        //         // 要做 CSS Tree Shaking 的路径⽂件
+        //         path.resolve(__dirname, './src/*.html'), // 请注意，我们同样需要对 html ⽂件进⾏ tree shaking
+        //         path.resolve(__dirname, './src/*.js')
+        //     ])
+        // }),
         new OptimizeCSSAssetsPlugin({//放在MiniCssExtractPlugin后面
             cssProcessor: require("cssnano"), //引⼊cssnano配置压缩选项
                 cssProcessorOptions: {
