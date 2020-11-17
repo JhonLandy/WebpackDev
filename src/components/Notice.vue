@@ -1,42 +1,42 @@
 <template>
-  <div class="box" v-if="isShow">
-    <h3>{{title}}</h3>
-    <p class="box-content">{{message}}</p>
-  </div>
+    <div v-if="isShow" class="box">
+        <h3>{{ title }}</h3>
+        <p class="box-content">{{ message }}</p>
+    </div>
 </template>
 
 <script>
 export default {
-  props: {
-    title: {
-      type: String,
-      default: ""
+    props: {
+        title: {
+            type: String,
+            default: ''
+        },
+        message: {
+            type: String,
+            default: ''
+        },
+        duration: {
+            type: Number,
+            default: 1000
+        }
     },
-    message: {
-      type: String,
-      default: ""
+    data() {
+        return {
+            isShow: true
+        }
     },
-    duration: {
-      type: Number,
-      default: 1000
+    methods: {
+        show() {
+            this.isShow = true
+            setTimeout(this.hide, this.duration)
+        },
+        hide() {
+            this.isShow = false
+            this.remove()
+        }
     }
-  },
-  data() {
-    return {
-      isShow: true
-    };
-  },
-  methods: {
-    show() {
-      this.isShow = true;
-      setTimeout(this.hide, this.duration);
-    },
-    hide() {
-      this.isShow = false;
-      this.remove();
-    }
-  }
-};
+}
 </script>
 
 <style>
@@ -54,7 +54,7 @@ export default {
 .box-content {
   width: 200px;
   margin: 10px auto;
-  font-size: 14px;  
+  font-size: 14px;
   padding: 8px 16px;
   background: #fff;
   border-radius: 3px;

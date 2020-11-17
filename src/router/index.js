@@ -1,10 +1,6 @@
-import Vue from 'vue'
 import Router from 'vue-router'
 import Store from '@/store/index'
-import Http from "@/service/Http";
-
-
-
+import Http from '@/service/Http'
 
 const routes = [
     {
@@ -38,35 +34,34 @@ const routes = [
                 meta: {
                     login: true
                 }
-            },
+            }
         ]
     }
-];
-
+]
 
 const router = new Router({
     mode: 'history',
     routes
 })
-router.beforeEach(async  (to, from, next) => {
-     // const user = await Http.get('/ycl', {});
-    const isLogin = !!window.localStorage.getItem("isLogin");
-    Http.post("/ycl/login", {
+router.beforeEach(async(to, from, next) => {
+    // const user = await Http.get('/ycl', {});
+    const isLogin = !!window.localStorage.getItem('isLogin')
+    Http.post('/ycl/login', {
         isLogin
-    }).then(({data}) =>{
+    }).then(({ data }) => {
         Store.commit('changeUser', data)
     })
     if (to.matched.some(item => item.meta.login)) {
         if (!isLogin) {
-            next({name: 'login'})
-        } else if (to.name === 'login'){
-            window.localStorage.removeItem("isLogin");
-            next();
+            next({ name: 'login' })
+        } else if (to.name === 'login') {
+            window.localStorage.removeItem('isLogin')
+            next()
         } else {
-            next();
+            next()
         }
     } else {
-        next();
+        next()
     }
 })
-export default router;
+export default router

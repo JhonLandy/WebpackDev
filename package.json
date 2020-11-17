@@ -5,7 +5,7 @@
   "scripts": {
     "serve": "webpack-dev-server --config webpack4.config.js",
     "build": "webpack --config webpack4.config.js",
-    "lint": "vue-cli-service lint"
+    "lint": "eslint ."
   },
   "dependencies": {
     "axios": "^0.19.2",
@@ -52,12 +52,19 @@
     "url-loader": "^4.0.0",
     "vue-html-loader": "^1.2.4",
     "vue-loader": "^15.9.1",
+    "vue-loader-plugin": "^1.3.0",
     "vue-style-loader": "^4.1.2",
     "vue-template-compiler": "^2.6.11",
     "webpack": "^4.42.1",
     "webpack-cli": "^3.3.12",
     "webpack-dev-server": "^3.10.3",
     "webpack-node-externals": "^1.7.2"
+  },
+  "husky": {
+     "hooks": {
+        "pre-commit": "npm run lint",
+        "pre-push": "npm run lint"
+     }
   },
   "eslintConfig": {
     "root": true,
