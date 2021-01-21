@@ -1,21 +1,21 @@
 <template>
     <el-col :span="6">
         <div class="card">
-                <img class="imgTab" :src="work.url">
-                <el-footer style="text-align:center;line-height: 60px">{{work.name}}</el-footer>
+            <img class="imgTab" :src="work.url">
+            <el-footer style="text-align:center;line-height: 60px">{{ work.name }}</el-footer>
         </div>
     </el-col>
 </template>
 <script>
-    export default {
-        name: 'tab',
-        props:{
-            work: {
-                type: Object,
-                default: ()=> {}
-            }
+export default {
+    name: 'Tab',
+    props: {
+        work: {
+            type: Object,
+            default: () => {}
         }
     }
+}
 </script>
 <style scoped>
 .card {

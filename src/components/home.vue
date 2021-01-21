@@ -1,20 +1,20 @@
 <template>
     <div>
-        <Header></Header>
-        <router-view></router-view>
+        <Header />
+        <router-view />
     </div>
 </template>
 <script>
-    import Header from './header'
+import Header from './header'
 
-    export default {
-        name: 'home',
-        components: {
-            Header
-        },
-        beforeRouteUpdate(to, from, next) {
-            console.log("ss");
-            next();
-        }
+export default {
+    name: 'Home',
+    components: {
+        Header
+    },
+    beforeRouteUpdate(to, from, next) {
+        console.log('ss')
+        next()
     }
+}
 </script>
