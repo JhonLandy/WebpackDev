@@ -5,8 +5,7 @@ const MiniCssExtractPlugin = require('mini-css-extract-plugin')
 const { CleanWebpackPlugin } = require('clean-webpack-plugin')
 // const PurifyCSS = require('purifycss-webpack')
 // const glob = require('glob-all')
-const OptimizeCSSAssetsPlugin = require('optimize-css-assets-webpack-plugin')
-
+// const OptimizeCSSAssetsPlugin = require('optimize-css-assets-webpack-plugin')
 module.exports = {
     'mode': 'development',
     'devtool': 'inline-source-map',
@@ -42,8 +41,7 @@ module.exports = {
                     {
                         loader: MiniCssExtractPlugin.loader, // 不再需要style-loader，⽤MiniCssExtractPlugin.loader代替
                         options: {
-                            publicPath: '/', // webpack5 不支持自动配置publicPath，手动配置，设置url-laoder时会有明显报错
-                            ignoreOrde: true
+                            publicPath: '/' // webpack5 不支持自动配置publicPath，手动配置，设置url-laoder时会有明显报错
                         }
                     },
                     'css-loader',
@@ -98,43 +96,43 @@ module.exports = {
             // },
         ]
     },
-    'optimization': {
-        sideEffects: true,
-        splitChunks: {
-            chunks: 'all',
-            // minSize: 20000,//webpack4配置
-            // maxSize: 0,
-            // minChunks: 1,
-            // maxAsyncRequests: 5,
-            // maxInitialRequests: 3,
-            // automaticNameDelimiter: '~',
-            minSize: { // webpack5的变化
-                javascript: 30000,
-                webassembly: 50000
-            },
-            cacheGroups: {
-                elementUI: {
-                    name: 'chunk-elementUI', // split elementUI into a single package
-                    priority: 20, // the weight needs to be larger than libs and app or it will be packaged into libs or app
-                    test: /[\\/]node_modules[\\/]_?element-ui(.*)/ // in order to adapt to cnpm
-                },
-                styles: {
-                    name: 'styles',
-                    test: /\.css$/,
-                    chunks: 'all',
-                    enforce: true,
-                    priority: 20
-                },
-                libs: {
-                    name: 'chunk-libs',
-                    test: /[\\/]node_modules[\\/]/,
-                    priority: 10,
-                    chunks: 'initial' // only package third parties that are initially dependent
-                }
-            }
-        },
-        usedExports: true // Tree Shaking
-    },
+    // 'optimization': {
+    //     sideEffects: true,
+    //     splitChunks: {
+    //         chunks: 'all',
+    //         // minSize: 20000,//webpack4配置
+    //         // maxSize: 0,
+    //         // minChunks: 1,
+    //         // maxAsyncRequests: 5,
+    //         // maxInitialRequests: 3,
+    //         // automaticNameDelimiter: '~',
+    //         minSize: { // webpack5的变化
+    //             javascript: 30000,
+    //             webassembly: 50000
+    //         },
+    //         cacheGroups: {
+    //             elementUI: {
+    //                 name: 'chunk-elementUI', // split elementUI into a single package
+    //                 priority: 20, // the weight needs to be larger than libs and app or it will be packaged into libs or app
+    //                 test: /[\\/]node_modules[\\/]_?element-ui(.*)/ // in order to adapt to cnpm
+    //             },
+    //             styles: {
+    //                 name: 'styles',
+    //                 test: /\.css$/,
+    //                 chunks: 'all',
+    //                 enforce: true,
+    //                 priority: 20
+    //             },
+    //             libs: {
+    //                 name: 'chunk-libs',
+    //                 test: /[\\/]node_modules[\\/]/,
+    //                 priority: 10,
+    //                 chunks: 'initial' // only package third parties that are initially dependent
+    //             }
+    //         }
+    //     },
+    //     usedExports: true // Tree Shaking
+    // },
     'plugins': [
         new VueLoaderPlugin(),
         new CleanWebpackPlugin(),
@@ -162,12 +160,12 @@ module.exports = {
         //         path.resolve(__dirname, './src/*.js')
         //     ])
         // }),
-        new OptimizeCSSAssetsPlugin({ // 放在MiniCssExtractPlugin后面
-            cssProcessor: require('cssnano'), // 引⼊cssnano配置压缩选项
-            cssProcessorOptions: {
-                discardComments: { removeAll: true }
-            }
-        })
+        // new OptimizeCSSAssetsPlugin({ // 放在MiniCssExtractPlugin后面
+        //     cssProcessor: require('cssnano'), // 引⼊cssnano配置压缩选项
+        //     cssProcessorOptions: {
+        //         discardComments: { removeAll: true }
+        //     }
+        // })
     ],
     'devServer': {
         // 生成的虚拟目录路径

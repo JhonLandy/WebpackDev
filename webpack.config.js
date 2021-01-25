@@ -6,7 +6,6 @@ const { CleanWebpackPlugin } = require('clean-webpack-plugin')
 // const PurifyCSS = require('purifycss-webpack')
 // const glob = require('glob-all')
 const OptimizeCSSAssetsPlugin = require('optimize-css-assets-webpack-plugin')
-
 module.exports = {
     'mode': 'development',
     'devtool': 'inline-source-map',
