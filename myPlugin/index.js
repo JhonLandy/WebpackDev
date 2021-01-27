@@ -1,8 +1,11 @@
 class myPlugin {
+    constructor({ name, age }) {
+        console.log(name, age)
+    }
     apply(complier) {
-        complier.hooks.beforeCompile.callAsync = function (context, fn) {
-            console.log(context)
-        }
+       console.log('complier')
+       console.log(complier)
+       console.log('complier')
     }
 }
 module.exports = myPlugin
