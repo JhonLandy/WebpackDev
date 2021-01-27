@@ -5,7 +5,7 @@ const MiniCssExtractPlugin = require('mini-css-extract-plugin')
 const { CleanWebpackPlugin } = require('clean-webpack-plugin')
 // const PurifyCSS = require('purifycss-webpack')
 // const glob = require('glob-all')
-const OptimizeCSSAssetsPlugin = require('optimize-css-assets-webpack-plugin')
+// const OptimizeCSSAssetsPlugin = require('optimize-css-assets-webpack-plugin')
 module.exports = {
     'mode': 'development',
     'devtool': 'inline-source-map',
@@ -39,7 +39,10 @@ module.exports = {
                 'test': /\.css$/,
                 'use': [
                     {
-                        'loader': MiniCssExtractPlugin.loader // 不再需要style-loader，⽤MiniCssExtractPlugin.loader代替
+                        loader: MiniCssExtractPlugin.loader, // 不再需要style-loader，⽤MiniCssExtractPlugin.loader代替
+                        options: {
+                            publicPath: '/' // webpack5 不支持自动配置publicPath，手动配置，设置url-laoder时会有明显报错
+                        }
                     },
                     'css-loader',
                     'postcss-loader'
@@ -51,21 +54,22 @@ module.exports = {
                 'exclude': /node_modules/
             },
             {
-                'test': /\.(eot|ttf|woff|woff2)(\?\S*)?$/,
-                'use': [
+                test: /\.(eot|svg|ttf|woff|woff2)(\?\S*)?$/,
+                use: [
                     {
                         'loader': 'url-loader',
                         'options': {
                             name: '[name].[ext]',
                             outputPath: 'assets/font',
-                            limit: 3 * 1024 // 对小体积的资源图片进行管理，小图片转成base64,减少请求数量
+                            limit: 3 * 1024,
+                            esModule: false
                         }
                     }
                 ]
             },
             {
-                'test': /\.(jpg|png|jpeg|webp|gif|svg)$/,
-                'use': [
+                test: /\.(jpg|png|jpeg|webp|gif)$/,
+                use: [
                     {
                         'loader': 'url-loader',
                         'options': {
@@ -73,30 +77,6 @@ module.exports = {
                             outputPath: 'assets/img',
                             limit: 3 * 1024, // 对小体积的资源图片进行管理，小图片转成base64,减少请求数量
                             esModule: false
-                        }
-                    },
-                    {
-                        loader: 'image-webpack-loader',
-                        options: {
-                            mozjpeg: {
-                                progressive: true// 默认为true
-                                // quality: 75//图片质量（大小）可以不用配置，会默认按照一定比例智能压缩
-                            },
-                            // optipng.enabled: false will disable optipng
-                            optipng: {
-                                enabled: false
-                            },
-                            pngquant: {
-                                quality: [0.65, 0.90],
-                                speed: 4
-                            },
-                            gifsicle: {
-                                interlaced: false
-                            },
-                            // the webp option will enable WEBP
-                            webp: {
-                                quality: 75
-                            }
                         }
                     }
                 ]
@@ -116,39 +96,43 @@ module.exports = {
             // },
         ]
     },
-    'optimization': {
-        sideEffects: true,
-        splitChunks: {
-            chunks: 'all',
-            minSize: 20000,
-            maxSize: 0,
-            minChunks: 1,
-            maxAsyncRequests: 5,
-            maxInitialRequests: 3,
-            automaticNameDelimiter: '~',
-            cacheGroups: {
-                elementUI: {
-                    name: 'chunk-elementUI', // split elementUI into a single package
-                    priority: 20, // the weight needs to be larger than libs and app or it will be packaged into libs or app
-                    test: /[\\/]node_modules[\\/]_?element-ui(.*)/ // in order to adapt to cnpm
-                },
-                styles: {
-                    name: 'styles',
-                    test: /\.css$/,
-                    chunks: 'all',
-                    enforce: true,
-                    priority: 20
-                },
-                libs: {
-                    name: 'chunk-libs',
-                    test: /[\\/]node_modules[\\/]/,
-                    priority: 10,
-                    chunks: 'initial' // only package third parties that are initially dependent
-                }
-            }
-        }
-        // usedExports: true //Tree Shaking
-    },
+    // 'optimization': {
+    //     sideEffects: true,
+    //     splitChunks: {
+    //         chunks: 'all',
+    //         // minSize: 20000,//webpack4配置
+    //         // maxSize: 0,
+    //         // minChunks: 1,
+    //         // maxAsyncRequests: 5,
+    //         // maxInitialRequests: 3,
+    //         // automaticNameDelimiter: '~',
+    //         minSize: { // webpack5的变化
+    //             javascript: 30000,
+    //             webassembly: 50000
+    //         },
+    //         cacheGroups: {
+    //             elementUI: {
+    //                 name: 'chunk-elementUI', // split elementUI into a single package
+    //                 priority: 20, // the weight needs to be larger than libs and app or it will be packaged into libs or app
+    //                 test: /[\\/]node_modules[\\/]_?element-ui(.*)/ // in order to adapt to cnpm
+    //             },
+    //             styles: {
+    //                 name: 'styles',
+    //                 test: /\.css$/,
+    //                 chunks: 'all',
+    //                 enforce: true,
+    //                 priority: 20
+    //             },
+    //             libs: {
+    //                 name: 'chunk-libs',
+    //                 test: /[\\/]node_modules[\\/]/,
+    //                 priority: 10,
+    //                 chunks: 'initial' // only package third parties that are initially dependent
+    //             }
+    //         }
+    //     },
+    //     usedExports: true // Tree Shaking
+    // },
     'plugins': [
         new VueLoaderPlugin(),
         new CleanWebpackPlugin(),
@@ -165,26 +149,22 @@ module.exports = {
                 minifyCSS: true // 压缩内联css
             }
         }),
-
         new MiniCssExtractPlugin({ // 放在HtmlWebpackPlugin后面
-            'title': 'demo',
             'filename': 'css/[name].[hash].css',
             'chunkFilename': 'css/[id]-[contenthash].css'
         }),
-
-        new OptimizeCSSAssetsPlugin({ // 放在MiniCssExtractPlugin后面
-            cssProcessor: require('cssnano'), // 引⼊cssnano配置压缩选项
-            cssProcessorOptions: {
-                discardComments: { removeAll: true }
-            }
-        })
-
-        // new PurifyCSS({//无顺序要求
-        //     paths: [
+        // new PurifyCSS({//无顺序要求,webpack5不支持
+        //     paths: glob.sync([
         //         // 要做 CSS Tree Shaking 的路径⽂件
-        //         path.resolve(__dirname, 'src/*.html'), // 请注意，我们同样需要对 html ⽂件进⾏ tree shaking
-        //         path.join(__dirname, 'src/*.js')
-        //     ]
+        //         path.resolve(__dirname, './src/*.html'), // 请注意，我们同样需要对 html ⽂件进⾏ tree shaking
+        //         path.resolve(__dirname, './src/*.js')
+        //     ])
+        // }),
+        // new OptimizeCSSAssetsPlugin({ // 放在MiniCssExtractPlugin后面
+        //     cssProcessor: require('cssnano'), // 引⼊cssnano配置压缩选项
+        //     cssProcessorOptions: {
+        //         discardComments: { removeAll: true }
+        //     }
         // })
     ],
     'devServer': {
